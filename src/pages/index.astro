@@ -1,0 +1,634 @@
+---
+import Layout from '../layouts/Layout.astro';
+import InteractiveZodiac from '../components/InteractiveZodiac.astro';
+import EditableAstrologerCard from '../components/EditableAstrologerCard.astro';
+import { getEntry } from 'astro:content';
+import { getSectionText, getSectionList } from '../utils/markdownParser';
+
+const backgroundEntry = await getEntry('portfolio', 'background');
+const rawBody = backgroundEntry ? backgroundEntry.body : '';
+
+const bio = getSectionText(rawBody, 'Short Bio');
+const summary = getSectionText(rawBody, 'Professional Summary');
+const personalNote = getSectionText(rawBody, 'Personal Note');
+
+const values = getSectionList(rawBody, 'Values').map(v => {
+  const parts = v.split(' - ');
+  const title = parts[0].replace(/\*\*/g, '').trim();
+  const desc = parts[1] || '';
+  return { title, desc };
+});
+
+const goals = getSectionList(rawBody, 'Career Goals').map(g => {
+  const parts = g.split(':');
+  const title = parts[0].replace(/\*\*/g, '').trim();
+  const desc = parts[1] || '';
+  return { title, desc };
+});
+---
+
+<Layout title="Home" description={bio}>
+  <section class="hero-band">
+    <img src="/images/astrology-hero.png" alt="" class="hero-image" aria-hidden="true" />
+    <div class="hero-overlay"></div>
+    <div class="container hero-section">
+      <div class="hero-text">
+        <span class="badge badge-gold">ज्योतिषाचार्य पं. वेंकटेश्वर शर्मा — ओसाव वाले गुरूजी</span>
+        <h1 class="hero-title">Aligning Your Life With <span class="text-gradient">Cosmic Design</span></h1>
+        <p class="hero-bio">{bio}</p>
+        <div class="hero-actions">
+          <a href="/contact" class="button-celestial">Book a Kundli Reading</a>
+          <a href="/experience" class="button-secondary">Explore My Journey</a>
+        </div>
+      </div>
+      <div class="hero-metrics glass-card">
+        <div class="metric-item">
+          <span class="metric-num text-gradient">8+</span>
+          <span class="metric-label">Years Experience</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-num text-gradient">500+</span>
+          <span class="metric-label">Charts Analyzed</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-num text-gradient">98%</span>
+          <span class="metric-label">Client Satisfaction</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container index-page">
+    
+    <!-- Kundli & Yoga Analysis -->
+    <section class="kundli-section" data-reveal>
+      <div class="kundli-image-wrap" data-reveal>
+        <img src="/images/kundli-yoga-analysis.png" alt="Kundli chart with Vedic astrology analysis tools" class="kundli-image" loading="lazy" />
+      </div>
+      <div class="kundli-content" data-reveal>
+        <span class="badge">Kundli Intelligence</span>
+        <h2 class="section-title">Kundli, Yogas & <span class="gold-gradient">Rajyog Analysis</span></h2>
+        <p class="section-subtitle">A complete reading should connect birth-chart structure with timing, strengths, challenges, and practical guidance.</p>
+        <div class="analysis-grid">
+          <div class="analysis-card glass-card" data-reveal>
+            <h3>Kundli Foundation</h3>
+            <p>Lagna, Moon sign, planetary dignity, house strength, aspects, conjunctions, nakshatras, and divisional chart context.</p>
+          </div>
+          <div class="analysis-card glass-card" data-reveal>
+            <h3>Yog & Rajyog</h3>
+            <p>Identification of Dhan Yog, Gaj Kesari Yog, Budhaditya Yog, Vipreet Rajyog, Neech Bhang Rajyog, and career-supporting combinations.</p>
+          </div>
+          <div class="analysis-card glass-card" data-reveal>
+            <h3>Dasha & Transit Timing</h3>
+            <p>Vimshottari dasha, antardasha, Saturn/Jupiter transit, sade sati, return periods, and high-probability windows for action.</p>
+          </div>
+          <div class="analysis-card glass-card" data-reveal>
+            <h3>Remedies & Guidance</h3>
+            <p>Practical remedies, mantra discipline, gemstone suitability, donation guidance, habit corrections, and decision planning.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Essential Consultation Areas -->
+    <section class="section-container" data-reveal>
+      <div class="section-header" data-reveal>
+        <h2 class="section-title">Essential <span class="text-gradient">Consultation Areas</span></h2>
+        <p class="section-subtitle">Focused astrology support for the decisions clients most often need clarity on.</p>
+      </div>
+      <div class="service-grid">
+        <div class="service-card glass-card" data-reveal>
+          <span class="service-icon">☉</span>
+          <h3>Career & Business Timing</h3>
+          <p>Profession direction, promotion windows, business launch muhurta, partnership risk, and financial growth cycles.</p>
+        </div>
+        <div class="service-card glass-card" data-reveal>
+          <span class="service-icon">☽</span>
+          <h3>Marriage & Compatibility</h3>
+          <p>Guna matching, Manglik analysis, relationship patterns, synastry, emotional compatibility, and timing for commitment.</p>
+        </div>
+        <div class="service-card glass-card" data-reveal>
+          <span class="service-icon">♃</span>
+          <h3>Wealth & Rajyog Potential</h3>
+          <p>Wealth houses, Lakshmi yogas, inheritance indicators, authority combinations, and periods that activate recognition.</p>
+        </div>
+        <div class="service-card glass-card" data-reveal>
+          <span class="service-icon">♄</span>
+          <h3>Health & Life Balance</h3>
+          <p>Stress signatures, recurring patterns, lifestyle-sensitive periods, and practical spiritual routines for steadier choices.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Zodiac Section -->
+    <section class="section-container" data-reveal>
+      <div class="section-header" data-reveal>
+        <h2 class="section-title">Explore the <span class="gold-gradient">Cosmic Wheel</span></h2>
+        <p class="section-subtitle">Interact with the houses of the zodiac to reveal key archetypes and insights.</p>
+      </div>
+      <InteractiveZodiac />
+    </section>
+
+    <!-- Bio Summary & Story -->
+    <section class="story-section" data-reveal>
+      <EditableAstrologerCard />
+      <div class="glass-card story-card" data-reveal>
+        <h2 class="text-gradient">Professional Summary</h2>
+        <p>{summary}</p>
+      </div>
+    </section>
+
+    <!-- Values Grid -->
+    <section class="section-container" data-reveal>
+      <div class="section-header" data-reveal>
+        <h2 class="section-title">Core <span class="text-gradient">Principles</span></h2>
+        <p class="section-subtitle">The philosophical pillars that ground my astrological practice.</p>
+      </div>
+      <div class="grid-cols-2 values-grid">
+        {values.map(val => (
+          <div class="value-card glass-card" data-reveal>
+            <span class="value-bullet">✦</span>
+            <div>
+              <h3>{val.title}</h3>
+              <p>{val.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Career Goals -->
+    <section class="section-container goals-section glass-card" data-reveal>
+      <h2 class="text-gradient">Active Pursuits & Goals</h2>
+      <div class="goals-list">
+        {goals.map(goal => (
+          <div class="goal-item">
+            <span class="goal-term badge">{goal.title}</span>
+            <p>{goal.desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Personal Note -->
+    <section class="personal-note-section glass-card" data-reveal>
+      <div class="note-quote">“</div>
+      <div class="note-content">
+        <h3>A Personal Note</h3>
+        <p>{personalNote}</p>
+      </div>
+    </section>
+
+  </div>
+</Layout>
+
+<style>
+  .index-page {
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+  }
+
+  /* Hero styles */
+  .hero-band {
+    position: relative;
+    min-height: min(720px, calc(100vh - 70px));
+    margin-top: -40px;
+    margin-bottom: 80px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .hero-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 76% center;
+    transform: scale(1.02);
+    z-index: -2;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(8, 8, 16, 0.95) 0%, rgba(8, 8, 16, 0.76) 42%, rgba(8, 8, 16, 0.24) 100%),
+      linear-gradient(0deg, hsl(var(--bg-obsidian)) 0%, transparent 24%);
+    z-index: -1;
+  }
+
+  .hero-section {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 40px;
+    align-items: center;
+    padding: 96px 24px 120px;
+  }
+
+  .hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+  }
+
+  .hero-bio {
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: hsl(var(--text-secondary));
+    max-width: 600px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .button-secondary {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-family: var(--font-headings);
+    font-weight: 600;
+    color: #fff;
+    border: 1px solid hsl(var(--border-space));
+    background: rgba(255, 255, 255, 0.05);
+    transition: var(--transition-smooth);
+    cursor: pointer;
+  }
+
+  .button-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: hsl(var(--primary-indigo) / 0.5);
+  }
+
+  .hero-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: 40px 32px;
+    background: rgba(13, 13, 22, 0.55);
+  }
+
+  .metric-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .metric-num {
+    font-family: var(--font-headings);
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .metric-label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: hsl(var(--text-muted));
+    margin-top: 4px;
+  }
+
+  /* Section headers */
+  .section-container {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .section-header {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .section-title {
+    font-size: 2.25rem;
+  }
+
+  .section-subtitle {
+    color: hsl(var(--text-muted));
+    font-size: 1.05rem;
+  }
+
+  .kundli-section {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.95fr) minmax(0, 1.05fr);
+    gap: 40px;
+    align-items: center;
+  }
+
+  .kundli-image-wrap {
+    border: 1px solid hsl(var(--gold-celestial) / 0.25);
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(13, 13, 22, 0.45);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.32);
+  }
+
+  .kundli-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .kundli-content {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: flex-start;
+  }
+
+  .analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .analysis-card,
+  .service-card {
+    border-radius: 12px;
+    background: rgba(13, 13, 22, 0.36);
+  }
+
+  .analysis-card h3,
+  .service-card h3 {
+    font-size: 1.08rem;
+    margin-bottom: 8px;
+  }
+
+  .analysis-card p,
+  .service-card p {
+    font-size: 0.94rem;
+    line-height: 1.55;
+  }
+
+  .service-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+  }
+
+  .service-card {
+    padding: 24px;
+  }
+
+  .service-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 16px;
+    border-radius: 50%;
+    border: 1px solid hsl(var(--gold-celestial) / 0.35);
+    color: hsl(var(--gold-celestial));
+    background: hsl(var(--gold-glow));
+    font-size: 1.35rem;
+  }
+
+  /* Story and summary styles */
+  .story-card {
+    background: rgba(13, 13, 22, 0.3);
+    padding: 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .story-card p {
+    font-size: 1.05rem;
+    line-height: 1.65;
+  }
+
+  /* Values grid */
+  .value-card {
+    display: flex;
+    gap: 16px;
+    padding: 24px;
+    align-items: flex-start;
+  }
+
+  .value-bullet {
+    color: hsl(var(--gold-celestial));
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .value-card h3 {
+    font-size: 1.15rem;
+    margin-bottom: 6px;
+  }
+
+  .value-card p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  /* Goals */
+  .goals-section {
+    background: rgba(13, 13, 22, 0.3);
+    padding: 40px;
+  }
+
+  .goals-section h2 {
+    font-size: 1.75rem;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  .goals-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .goal-item {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .goal-term {
+    flex-shrink: 0;
+    min-width: 110px;
+    text-align: center;
+  }
+
+  .goal-item p {
+    font-size: 1rem;
+    color: hsl(var(--text-secondary));
+  }
+
+  /* Personal Note */
+  .personal-note-section {
+    position: relative;
+    padding: 40px;
+    background: linear-gradient(135deg, rgba(24, 20, 45, 0.35) 0%, rgba(13, 13, 22, 0.4) 100%);
+    border: 1px solid hsl(var(--gold-celestial) / 0.15);
+  }
+
+  .note-quote {
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    font-size: 8rem;
+    font-family: serif;
+    line-height: 1;
+    color: hsl(var(--gold-celestial) / 0.15);
+    pointer-events: none;
+  }
+
+  .note-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .note-content h3 {
+    font-size: 1.5rem;
+    color: hsl(var(--gold-celestial));
+  }
+
+  .note-content p {
+    font-size: 1.05rem;
+    line-height: 1.65;
+    font-style: italic;
+  }
+
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 0.65s ease,
+      transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .analysis-card:nth-child(2),
+  .service-card:nth-child(2),
+  .value-card:nth-child(2) {
+    --reveal-delay: 80ms;
+  }
+
+  .analysis-card:nth-child(3),
+  .service-card:nth-child(3),
+  .value-card:nth-child(3) {
+    --reveal-delay: 140ms;
+  }
+
+  .analysis-card:nth-child(4),
+  .service-card:nth-child(4),
+  .value-card:nth-child(4) {
+    --reveal-delay: 200ms;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .hero-band {
+      min-height: auto;
+      margin-bottom: 64px;
+    }
+
+    .hero-image {
+      object-position: 68% center;
+    }
+
+    .hero-section {
+      grid-template-columns: 1fr;
+      gap: 32px;
+      padding-top: 72px;
+      padding-bottom: 80px;
+    }
+
+    .hero-metrics {
+      flex-direction: row;
+      justify-content: space-around;
+      padding: 24px;
+    }
+
+    .kundli-section,
+    .service-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .kundli-image {
+      aspect-ratio: 16 / 9;
+    }
+
+    .analysis-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .hero-band {
+      min-height: auto;
+    }
+
+    .hero-image {
+      object-position: 62% center;
+    }
+
+    .hero-overlay {
+      background:
+        linear-gradient(90deg, rgba(8, 8, 16, 0.96) 0%, rgba(8, 8, 16, 0.84) 64%, rgba(8, 8, 16, 0.5) 100%),
+        linear-gradient(0deg, hsl(var(--bg-obsidian)) 0%, transparent 24%);
+    }
+
+    .hero-title {
+      font-size: 2.5rem;
+    }
+
+    .hero-metrics {
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .goal-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+  }
+</style>

@@ -1,0 +1,275 @@
+---
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Professional Astro portfolio for a Vedic and Western Astrology practitioner, sharing consulting experience, techniques, values, and booking." } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    
+    <!-- SEO Optimization -->
+    <title>{title} | Celestial Guidance Astrology</title>
+    <meta name="description" content={description} />
+    
+    <!-- View Transitions / Client Router -->
+    <ClientRouter />
+  </head>
+  <body>
+    <!-- Shimmering Background Starfield -->
+    <div class="stars-container">
+      <div class="stars"></div>
+      <div class="stars-medium"></div>
+      <div class="stars-large"></div>
+      <div class="nebula-glow nebula-glow-1"></div>
+      <div class="nebula-glow nebula-glow-2"></div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="header">
+      <div class="header-container container">
+        <a href="/" class="logo">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" stroke-dasharray="3 3"></circle>
+            <circle cx="12" cy="12" r="6"></circle>
+            <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
+            <line x1="12" y1="2" x2="12" y2="22"></line>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+          </svg>
+          <span class="logo-text">Celestial <span class="gold-gradient">Guidance</span></span>
+        </a>
+        <nav class="nav">
+          <a href="/" class="nav-link">Home</a>
+          <a href="/experience" class="nav-link">Experience</a>
+          <a href="/contact" class="nav-link">Contact & Booking</a>
+        </nav>
+        <button class="language-toggle" type="button" data-language-toggle aria-label="भाषा हिंदी में बदलें" aria-pressed="false">
+          <span data-language-current>EN</span>
+          <span class="toggle-divider" aria-hidden="true"></span>
+          <span data-language-target>हि</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-container container">
+        <div class="footer-brand">
+          <p>© {new Date().getFullYear()} Celestial Guidance Astrology. All rights reserved.</p>
+          <p class="footer-subtext">Aligning ancient wisdom with modern psychological insights.</p>
+        </div>
+        <div class="footer-links">
+          <a href="mailto:cosmic.guidance@example.com" class="footer-link">Email</a>
+          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="footer-link">LinkedIn</a>
+          <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub</a>
+        </div>
+      </div>
+    </footer>
+
+    <style>
+      .header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(8, 8, 16, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid hsl(var(--border-space));
+        transition: var(--transition-smooth);
+      }
+
+      .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 70px;
+        gap: 24px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: var(--font-headings);
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #fff;
+        text-decoration: none;
+      }
+
+      .logo-icon {
+        width: 28px;
+        height: 28px;
+        color: hsl(var(--gold-celestial));
+        animation: spin 60s linear infinite;
+      }
+
+      @keyframes spin {
+        100% { transform: rotate(360deg); }
+      }
+
+      .logo-text {
+        letter-spacing: -0.01em;
+      }
+
+      .nav {
+        display: flex;
+        gap: 24px;
+        margin-left: auto;
+      }
+
+      .nav-link {
+        font-family: var(--font-headings);
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: hsl(var(--text-secondary));
+        position: relative;
+        padding: 6px 0;
+      }
+
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, hsl(var(--primary-indigo)), hsl(var(--accent-purple)));
+        transition: var(--transition-smooth);
+      }
+
+      .nav-link:hover {
+        color: #fff;
+      }
+
+      .nav-link:hover::after {
+        width: 100%;
+      }
+
+      .language-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-width: 74px;
+        height: 38px;
+        padding: 0 12px;
+        border: 1px solid hsl(var(--border-space));
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.05);
+        color: hsl(var(--text-secondary));
+        font-family: var(--font-headings);
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+      }
+
+      .language-toggle:hover {
+        border-color: hsl(var(--gold-celestial) / 0.65);
+        color: #fff;
+        background: hsl(var(--gold-glow));
+      }
+
+      .language-toggle[aria-pressed="true"] {
+        border-color: hsl(var(--primary-indigo) / 0.55);
+        color: #fff;
+        background: hsl(var(--primary-indigo-glow));
+      }
+
+      .toggle-divider {
+        width: 1px;
+        height: 16px;
+        background: hsl(var(--border-space));
+      }
+
+      .main-content {
+        min-height: calc(100vh - 170px);
+        padding-top: 40px;
+        padding-bottom: 80px;
+      }
+
+      .footer {
+        background: rgba(8, 8, 16, 0.9);
+        border-top: 1px solid hsl(var(--border-space));
+        padding: 40px 0;
+        color: hsl(var(--text-muted));
+        font-size: 0.9rem;
+      }
+
+      .footer-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 24px;
+      }
+
+      .footer-brand {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .footer-subtext {
+        font-size: 0.8rem;
+        color: hsl(var(--text-muted) / 0.7);
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 20px;
+      }
+
+      .footer-link {
+        color: hsl(var(--text-muted));
+        transition: var(--transition-smooth);
+      }
+
+      .footer-link:hover {
+        color: hsl(var(--primary-indigo));
+      }
+
+      @media (max-width: 600px) {
+        .header-container {
+          flex-direction: column;
+          height: auto;
+          padding: 16px 0;
+          gap: 12px;
+        }
+
+        .nav {
+          gap: 16px;
+          margin-left: 0;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        .footer-container {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+      }
+    </style>
+    <script>
+      import '../utils/languageToggle';
+      import '../utils/scrollReveal';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,489 @@
+---
+const defaultImage = '/images/astrologer-profile.png';
+---
+
+<aside class="astrologer-card glass-card" data-reveal data-editable-astrologer-card>
+  <div class="portrait-frame">
+    <img
+      src={defaultImage}
+      alt="ज्योतिषाचार्य पं. वेंकटेश्वर शर्मा"
+      class="astrologer-portrait"
+      data-astrologer-image
+      data-default-src={defaultImage}
+    />
+  </div>
+
+  <div class="astrologer-card-body">
+    <span class="badge badge-gold">ज्योतिषाचार्य</span>
+    <h3>पं. वेंकटेश्वर शर्मा</h3>
+    <p class="known-as">(ओसाव वाले गुरूजी)</p>
+    <p>ज्योतिष एवं कर्मकाण्ड परामर्श केन्द्र। ज्योतिष वास्तु परामर्श, यज्ञ अनुष्ठान, कर्मकाण्ड, भागवत कथा, मुहूर्त, जन्म पत्रिका विश्लेषण।</p>
+    <div class="contact-quick">
+      <a href="tel:+919828999394" class="contact-chip">📞 9828999394</a>
+      <a href="https://wa.me/917014523885" class="contact-chip whatsapp-chip">💬 7014523885</a>
+    </div>
+
+    <!-- Developer-only controls (hidden by default) -->
+    <div class="dev-controls" data-dev-controls>
+      <button type="button" class="dev-unlock-btn" data-dev-unlock title="Developer access">🔒</button>
+      <div class="image-actions hidden" data-image-actions>
+        <label class="image-action button-celestial">
+          Change Image
+          <input type="file" accept="image/*" data-astrologer-upload />
+        </label>
+        <button type="button" class="image-action reset-action" data-astrologer-reset>Reset</button>
+        <button type="button" class="image-action lock-action" data-dev-lock>🔒 Lock</button>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Password Modal -->
+<div class="dev-modal-overlay hidden" data-dev-modal>
+  <div class="dev-modal glass-card">
+    <h4>🔐 Developer Access</h4>
+    <p>Enter the developer password to unlock image editing.</p>
+    <div class="dev-modal-form">
+      <input type="password" placeholder="Enter password" data-dev-password autocomplete="off" />
+      <div class="dev-modal-actions">
+        <button type="button" class="button-celestial" data-dev-submit>Unlock</button>
+        <button type="button" class="dev-cancel-btn" data-dev-cancel>Cancel</button>
+      </div>
+    </div>
+    <p class="dev-error hidden" data-dev-error>❌ Incorrect password. Access denied.</p>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'portfolio-astrologer-profile-image';
+  const SESSION_KEY = 'portfolio-dev-unlocked';
+
+  // Developer password hash (SHA-256 of "guruji2024")
+  // Change this by running: echo -n "YOUR_PASSWORD" | shasum -a 256
+  const DEV_PASSWORD_HASH = '829b3cc68e1300be5c79883dc09cf0ef006bddb0778a20751e30f1fd0118aed4';
+
+  async function hashPassword(password: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  function initEditableAstrologerCards() {
+    document.querySelectorAll<HTMLElement>('[data-editable-astrologer-card]').forEach((card) => {
+      if (card.dataset.editorReady === 'true') return;
+
+      const image = card.querySelector<HTMLImageElement>('[data-astrologer-image]');
+      const input = card.querySelector<HTMLInputElement>('[data-astrologer-upload]');
+      const reset = card.querySelector<HTMLButtonElement>('[data-astrologer-reset]');
+      const unlockBtn = card.querySelector<HTMLButtonElement>('[data-dev-unlock]');
+      const lockBtn = card.querySelector<HTMLButtonElement>('[data-dev-lock]');
+      const imageActions = card.querySelector<HTMLElement>('[data-image-actions]');
+
+      if (!image || !input || !reset || !unlockBtn || !imageActions) return;
+
+      card.dataset.editorReady = 'true';
+
+      // Load saved image (if developer previously changed it)
+      const savedImage = localStorage.getItem(STORAGE_KEY);
+      if (savedImage) image.src = savedImage;
+
+      // Check if developer session is already active
+      const isUnlocked = sessionStorage.getItem(SESSION_KEY) === 'true';
+      if (isUnlocked) {
+        unlockBtn.classList.add('hidden');
+        imageActions.classList.remove('hidden');
+      }
+
+      // Modal elements
+      const modal = document.querySelector<HTMLElement>('[data-dev-modal]');
+      const passwordInput = document.querySelector<HTMLInputElement>('[data-dev-password]');
+      const submitBtn = document.querySelector<HTMLButtonElement>('[data-dev-submit]');
+      const cancelBtn = document.querySelector<HTMLButtonElement>('[data-dev-cancel]');
+      const errorMsg = document.querySelector<HTMLElement>('[data-dev-error]');
+
+      // Unlock button → show password modal
+      unlockBtn.addEventListener('click', () => {
+        if (modal && passwordInput) {
+          modal.classList.remove('hidden');
+          passwordInput.value = '';
+          errorMsg?.classList.add('hidden');
+          passwordInput.focus();
+        }
+      });
+
+      // Submit password
+      async function tryUnlock() {
+        if (!passwordInput || !modal || !errorMsg) return;
+        const password = passwordInput.value;
+        const hash = await hashPassword(password);
+
+        if (hash === DEV_PASSWORD_HASH) {
+          // Correct password → unlock controls
+          sessionStorage.setItem(SESSION_KEY, 'true');
+          unlockBtn.classList.add('hidden');
+          imageActions.classList.remove('hidden');
+          modal.classList.add('hidden');
+          errorMsg.classList.add('hidden');
+        } else {
+          // Wrong password → show error
+          errorMsg.classList.remove('hidden');
+          passwordInput.value = '';
+          passwordInput.focus();
+        }
+      }
+
+      submitBtn?.addEventListener('click', tryUnlock);
+      passwordInput?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') tryUnlock();
+      });
+
+      // Cancel modal
+      cancelBtn?.addEventListener('click', () => {
+        modal?.classList.add('hidden');
+      });
+
+      // Close modal on overlay click
+      modal?.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.add('hidden');
+      });
+
+      // Lock button → re-lock controls
+      lockBtn?.addEventListener('click', () => {
+        sessionStorage.removeItem(SESSION_KEY);
+        imageActions.classList.add('hidden');
+        unlockBtn.classList.remove('hidden');
+      });
+
+      // Image upload handler
+      input.addEventListener('change', () => {
+        const file = input.files?.[0];
+        if (!file || !file.type.startsWith('image/')) return;
+
+        const reader = new FileReader();
+        reader.addEventListener('load', () => {
+          const result = typeof reader.result === 'string' ? reader.result : '';
+          if (!result) return;
+
+          image.src = result;
+          localStorage.setItem(STORAGE_KEY, result);
+        });
+        reader.readAsDataURL(file);
+      });
+
+      // Reset handler
+      reset.addEventListener('click', () => {
+        localStorage.removeItem(STORAGE_KEY);
+        image.src = image.dataset.defaultSrc || '/images/astrologer-profile.png';
+        input.value = '';
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initEditableAstrologerCards);
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEditableAstrologerCards, { once: true });
+  } else {
+    initEditableAstrologerCards();
+  }
+</script>
+
+<style>
+  .astrologer-card {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.7fr) 1fr;
+    gap: 28px;
+    align-items: center;
+    padding: 28px;
+    max-width: 980px;
+    margin: 0 auto;
+    background: rgba(13, 13, 22, 0.38);
+  }
+
+  .portrait-frame {
+    aspect-ratio: 4 / 5;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid hsl(var(--gold-celestial) / 0.28);
+    background: hsl(var(--card-space));
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+  }
+
+  .astrologer-portrait {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  .astrologer-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .astrologer-card-body h3 {
+    font-size: 1.55rem;
+  }
+
+  .astrologer-card-body p {
+    font-size: 1rem;
+    line-height: 1.58;
+  }
+
+  /* Developer controls */
+  .dev-controls {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .dev-unlock-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid hsl(var(--border-space) / 0.4);
+    background: rgba(255, 255, 255, 0.03);
+    color: hsl(var(--text-muted));
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: var(--transition-smooth);
+    opacity: 0.4;
+  }
+
+  .dev-unlock-btn:hover {
+    opacity: 1;
+    border-color: hsl(var(--gold-celestial) / 0.5);
+    background: hsl(var(--gold-glow));
+    transform: scale(1.1);
+  }
+
+  .image-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    animation: fadeSlideIn 0.35s ease;
+  }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .image-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    border: 0;
+    cursor: pointer;
+    font-family: var(--font-headings);
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .image-action input {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .reset-action,
+  .lock-action {
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid hsl(var(--border-space));
+    background: rgba(255, 255, 255, 0.05);
+    color: hsl(var(--text-secondary));
+    transition: var(--transition-smooth);
+  }
+
+  .reset-action:hover {
+    color: #fff;
+    border-color: hsl(var(--gold-celestial) / 0.5);
+    background: hsl(var(--gold-glow));
+  }
+
+  .lock-action:hover {
+    color: #ff6b6b;
+    border-color: rgba(255, 107, 107, 0.5);
+    background: rgba(255, 107, 107, 0.08);
+  }
+
+  /* Password Modal */
+  .dev-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    animation: fadeIn 0.25s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .dev-modal {
+    max-width: 400px;
+    width: 100%;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border: 1px solid hsl(var(--gold-celestial) / 0.25);
+    background: rgba(13, 13, 22, 0.95);
+    animation: modalSlideUp 0.3s ease;
+  }
+
+  @keyframes modalSlideUp {
+    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .dev-modal h4 {
+    font-size: 1.35rem;
+    color: hsl(var(--gold-celestial));
+  }
+
+  .dev-modal p {
+    font-size: 0.92rem;
+    color: hsl(var(--text-muted));
+    line-height: 1.5;
+  }
+
+  .dev-modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .dev-modal-form input {
+    background: rgba(8, 8, 16, 0.6);
+    border: 1px solid hsl(var(--border-space));
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: #fff;
+    outline: none;
+    transition: var(--transition-smooth);
+  }
+
+  .dev-modal-form input:focus {
+    border-color: hsl(var(--gold-celestial));
+    box-shadow: 0 0 12px hsl(var(--gold-celestial) / 0.2);
+  }
+
+  .dev-modal-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .dev-cancel-btn {
+    padding: 10px 20px;
+    border-radius: 999px;
+    border: 1px solid hsl(var(--border-space));
+    background: rgba(255, 255, 255, 0.05);
+    color: hsl(var(--text-secondary));
+    cursor: pointer;
+    font-family: var(--font-headings);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: var(--transition-smooth);
+  }
+
+  .dev-cancel-btn:hover {
+    color: #fff;
+    border-color: hsl(var(--border-space));
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .dev-error {
+    color: #ff6b6b !important;
+    font-weight: 600;
+    font-size: 0.88rem !important;
+    animation: shake 0.4s ease;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  @media (max-width: 760px) {
+    .astrologer-card {
+      grid-template-columns: 1fr;
+    }
+
+    .portrait-frame {
+      max-width: 360px;
+      width: 100%;
+      margin: 0 auto;
+    }
+  }
+
+  .known-as {
+    font-size: 0.95rem;
+    color: hsl(var(--gold-celestial));
+    font-style: italic;
+    margin-top: -6px;
+  }
+
+  .contact-quick {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+
+  .contact-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid hsl(var(--border-space));
+    color: hsl(var(--text-primary));
+    transition: var(--transition-smooth);
+    text-decoration: none;
+  }
+
+  .contact-chip:hover {
+    background: hsl(var(--gold-glow));
+    border-color: hsl(var(--gold-celestial) / 0.5);
+    color: hsl(var(--gold-celestial));
+    transform: translateY(-1px);
+  }
+
+  .whatsapp-chip:hover {
+    background: rgba(37, 211, 102, 0.12);
+    border-color: rgba(37, 211, 102, 0.5);
+    color: #25d366;
+  }
+</style>

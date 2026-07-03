@@ -1,0 +1,268 @@
+---
+---
+
+<div class="zodiac-container glass-card">
+  <div class="zodiac-wheel-wrapper">
+    <!-- SVG Zodiac Wheel -->
+    <svg class="zodiac-svg" viewBox="0 0 400 400" id="zodiac-wheel">
+      <defs>
+        <!-- Gold Glow Filter -->
+        <filter id="gold-glow-filter" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="5" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+        <!-- Radial Gradient for Wheel Center -->
+        <radialGradient id="center-gradient" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="rgba(13, 13, 22, 0.95)" />
+          <stop offset="70%" stop-color="rgba(24, 20, 45, 0.7)" />
+          <stop offset="100%" stop-color="rgba(13, 13, 22, 0.95)" />
+        </radialGradient>
+      </defs>
+
+      <!-- Outer Cosmic Circles -->
+      <circle cx="200" cy="200" r="185" stroke="hsl(var(--border-space))" stroke-width="1.5" fill="none" />
+      <circle cx="200" cy="200" r="180" stroke="hsl(var(--gold-celestial) / 0.5)" stroke-width="1" fill="none" />
+      
+      <!-- Inner Center Circle -->
+      <circle cx="200" cy="200" r="65" stroke="hsl(var(--gold-celestial) / 0.6)" stroke-width="1.5" fill="url(#center-gradient)" />
+      <circle cx="200" cy="200" r="60" stroke="hsl(var(--border-space))" stroke-width="1" fill="none" />
+      
+      <!-- Center Core -->
+      <circle cx="200" cy="200" r="15" fill="hsl(var(--primary-indigo) / 0.2)" stroke="hsl(var(--primary-indigo) / 0.6)" stroke-width="1" />
+      <circle cx="200" cy="200" r="5" fill="hsl(var(--gold-celestial))" />
+
+      <!-- Zodiac Sign Arcs Group -->
+      <g id="zodiac-sectors">
+        <!-- 
+          We'll divide the 360 degrees into 12 sectors of 30 degrees each.
+          Center is (200, 200). Radius is 180. Inner Radius is 65.
+          We can draw them with path. For interactive simplicity, we can also use stroke-dasharray on circles,
+          but SVG paths give precise hover areas.
+        -->
+        <!-- 1. Aries (0 - 30 deg) -->
+        <path class="zodiac-sector" data-sign="Aries" data-element="Fire" data-planet="Mars" data-desc="The pioneer of the zodiac. Drives initiative, raw courage, and new beginnings. Vedic translation: Mesha." d="M 200 200 L 200 20 A 180 180 0 0 1 290 44.1 L 200 200 Z" />
+        <!-- 2. Taurus (30 - 60 deg) -->
+        <path class="zodiac-sector" data-sign="Taurus" data-element="Earth" data-planet="Venus" data-desc="The anchor of the zodiac. Symbolizes stability, sensory beauty, determination, and material creation. Vedic: Vrishabha." d="M 200 200 L 290 44.1 A 180 180 0 0 1 355.9 110 L 200 200 Z" />
+        <!-- 3. Gemini (60 - 90 deg) -->
+        <path class="zodiac-sector" data-sign="Gemini" data-element="Air" data-planet="Mercury" data-desc="The messenger of the zodiac. Inspires versatile communication, intellect, learning, and adaptability. Vedic: Mithuna." d="M 200 200 L 355.9 110 A 180 180 0 0 1 380 200 L 200 200 Z" />
+        <!-- 4. Cancer (90 - 120 deg) -->
+        <path class="zodiac-sector" data-sign="Cancer" data-element="Water" data-planet="Moon" data-desc="The nurturer of the zodiac. Rules the emotional realm, intuition, security, home, and ancestral roots. Vedic: Karka." d="M 200 200 L 380 200 A 180 180 0 0 1 355.9 290 L 200 200 Z" />
+        <!-- 5. Leo (120 - 150 deg) -->
+        <path class="zodiac-sector" data-sign="Leo" data-element="Fire" data-planet="Sun" data-desc="The sovereign of the zodiac. Embodies creative expression, leadership, vitality, and generosity. Vedic: Simha." d="M 200 200 L 355.9 290 A 180 180 0 0 1 290 355.9 L 200 200 Z" />
+        <!-- 6. Virgo (150 - 180 deg) -->
+        <path class="zodiac-sector" data-sign="Virgo" data-element="Earth" data-planet="Mercury" data-desc="The alchemist of the zodiac. Focuses on systems analysis, practical service, refinement, and wellness. Vedic: Kanya." d="M 200 200 L 290 355.9 A 180 180 0 0 1 200 380 L 200 200 Z" />
+        <!-- 7. Libra (180 - 210 deg) -->
+        <path class="zodiac-sector" data-sign="Libra" data-element="Air" data-planet="Venus" data-desc="The diplomat of the zodiac. Seeks equilibrium, relationship harmony, aesthetic balance, and justice. Vedic: Tula." d="M 200 200 L 200 380 A 180 180 0 0 1 110 355.9 L 200 200 Z" />
+        <!-- 8. Scorpio (210 - 240 deg) -->
+        <path class="zodiac-sector" data-sign="Scorpio" data-element="Water" data-planet="Mars/Pluto" data-desc="The transformer of the zodiac. Commands depth, psychological insight, healing, and personal power. Vedic: Vrishchika." d="M 200 200 L 110 355.9 A 180 180 0 0 1 44.1 290 L 200 200 Z" />
+        <!-- 9. Sagittarius (240 - 270 deg) -->
+        <path class="zodiac-sector" data-sign="Sagittarius" data-element="Fire" data-planet="Jupiter" data-desc="The seeker of the zodiac. Drives philosophical exploration, wisdom, travel, optimism, and truth. Vedic: Dhanu." d="M 200 200 L 44.1 290 A 180 180 0 0 1 20 200 L 200 200 Z" />
+        <!-- 10. Capricorn (270 - 300 deg) -->
+        <path class="zodiac-sector" data-sign="Capricorn" data-element="Earth" data-planet="Saturn" data-desc="The builder of the zodiac. Master of responsibility, timing, structured ambition, and longevity. Vedic: Makara." d="M 200 200 L 20 200 A 180 180 0 0 1 44.1 110 L 200 200 Z" />
+        <!-- 11. Aquarius (300 - 330 deg) -->
+        <path class="zodiac-sector" data-sign="Aquarius" data-element="Air" data-planet="Saturn/Uranus" data-desc="The visionary of the zodiac. Connects community, innovative solutions, progress, and independence. Vedic: Kumbha." d="M 200 200 L 44.1 110 A 180 180 0 0 1 110 44.1 L 200 200 Z" />
+        <!-- 12. Pisces (330 - 360 deg) -->
+        <path class="zodiac-sector" data-sign="Pisces" data-element="Water" data-planet="Jupiter/Neptune" data-desc="The mystic of the zodiac. Governs the spiritual realms, unity, compassion, and creative dreaming. Vedic: Meena." d="M 200 200 L 110 44.1 A 180 180 0 0 1 200 20 L 200 200 Z" />
+      </g>
+
+      <!-- Overlay Dividers for clean look -->
+      <g stroke="hsl(var(--border-space) / 0.5)" stroke-width="0.75" pointer-events="none">
+        <line x1="200" y1="20" x2="200" y2="380" />
+        <line x1="20" y1="200" x2="380" y2="200" />
+        <line x1="110" y1="44.1" x2="290" y2="355.9" />
+        <line x1="290" y1="44.1" x2="110" y2="355.9" />
+        <line x1="44.1" y1="110" x2="355.9" y2="290" />
+        <line x1="355.9" y1="110" x2="44.1" y2="290" />
+      </g>
+    </svg>
+    <div class="center-zodiac-text">
+      <span class="center-symbol">✨</span>
+    </div>
+  </div>
+
+  <!-- Astrological Info Display -->
+  <div class="zodiac-info" id="zodiac-info-box">
+    <div class="initial-info">
+      <h3 class="gold-gradient">Interactive Zodiac</h3>
+      <p>Hover over or tap any sector of the celestial wheel to decode its archetype, ruling planet, element, and cosmic guidance.</p>
+    </div>
+    <div class="active-info hidden">
+      <div class="info-header">
+        <h3 id="info-sign" class="text-gradient">Aries</h3>
+        <div class="info-badges">
+          <span class="badge" id="info-element">Fire</span>
+          <span class="badge badge-gold" id="info-planet">Mars</span>
+        </div>
+      </div>
+      <p id="info-description">The pioneer of the zodiac...</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .zodiac-container {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 32px;
+    align-items: center;
+    padding: 32px;
+  }
+
+  .zodiac-wheel-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  .zodiac-svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .zodiac-sector {
+    fill: rgba(18, 16, 35, 0.4);
+    stroke: hsl(var(--border-space) / 0.3);
+    stroke-width: 0.5;
+    cursor: pointer;
+    transition: fill var(--transition-smooth), stroke var(--transition-smooth), transform var(--transition-smooth);
+    transform-origin: 200px 200px;
+  }
+
+  .zodiac-sector:hover {
+    fill: hsl(var(--primary-indigo-glow));
+    stroke: hsl(var(--gold-celestial));
+    stroke-width: 1.5;
+    filter: url(#gold-glow-filter);
+  }
+
+  .center-zodiac-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    font-size: 1.8rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .zodiac-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 180px;
+    padding: 16px;
+    border-left: 2px solid hsl(var(--border-space));
+  }
+
+  .info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .info-badges {
+    display: flex;
+    gap: 8px;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .zodiac-container {
+      grid-template-columns: 1fr;
+      gap: 24px;
+      padding: 24px;
+    }
+
+    .zodiac-info {
+      border-left: none;
+      border-top: 2px solid hsl(var(--border-space));
+      padding-top: 24px;
+      min-height: auto;
+    }
+  }
+</style>
+
+<script>
+  function initZodiac() {
+    const sectors = document.querySelectorAll('.zodiac-sector');
+    const infoBox = document.getElementById('zodiac-info-box');
+    const initialInfo = infoBox?.querySelector('.initial-info');
+    const activeInfo = infoBox?.querySelector('.active-info');
+    const infoSign = document.getElementById('info-sign');
+    const infoElement = document.getElementById('info-element');
+    const infoPlanet = document.getElementById('info-planet');
+    const infoDescription = document.getElementById('info-description');
+    const centerSymbol = document.querySelector('.center-symbol');
+
+    // Unicode symbols for signs to display in center
+    const signSymbols: Record<string, string> = {
+      Aries: '♈', Taurus: '♉', Gemini: '♊', Cancer: '♋',
+      Leo: '♌', Virgo: '♍', Libra: '♎', Scorpio: '♏',
+      Sagittarius: '♐', Capricorn: '♑', Aquarius: '♒', Pisces: '♓'
+    };
+
+    sectors.forEach(sector => {
+      sector.addEventListener('mouseenter', (e) => {
+        const target = e.currentTarget as SVGPathElement;
+        const sign = target.getAttribute('data-sign') || '';
+        const element = target.getAttribute('data-element') || '';
+        const planet = target.getAttribute('data-planet') || '';
+        const desc = target.getAttribute('data-desc') || '';
+
+        // Show active info
+        if (initialInfo && activeInfo && infoSign && infoElement && infoPlanet && infoDescription) {
+          initialInfo.classList.add('hidden');
+          activeInfo.classList.remove('hidden');
+
+          infoSign.textContent = sign;
+          infoElement.textContent = element;
+          
+          // Modify element badge styling
+          infoElement.className = 'badge';
+          if (element === 'Fire') infoElement.style.color = '#ff6b6b';
+          else if (element === 'Earth') infoElement.style.color = '#51cf66';
+          else if (element === 'Air') infoElement.style.color = '#339af0';
+          else if (element === 'Water') infoElement.style.color = '#cc5de8';
+
+          infoPlanet.textContent = planet;
+          infoDescription.textContent = desc;
+        }
+
+        if (centerSymbol && signSymbols[sign]) {
+          centerSymbol.textContent = signSymbols[sign];
+          centerSymbol.classList.add('glow-symbol');
+        }
+      });
+
+      sector.addEventListener('mouseleave', () => {
+        if (centerSymbol) {
+          centerSymbol.classList.remove('glow-symbol');
+        }
+      });
+    });
+  }
+
+  // Support both page loads and view transitions
+  document.addEventListener('astro:page-load', initZodiac);
+  // Fallback for initial load
+  initZodiac();
+</script>
+
+<style is:global>
+  .glow-symbol {
+    text-shadow: 0 0 12px hsl(var(--gold-celestial));
+    color: hsl(var(--gold-celestial));
+    transform: scale(1.15);
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), text-shadow 0.2s ease;
+  }
+</style>

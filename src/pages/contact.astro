@@ -1,0 +1,462 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getEntry } from 'astro:content';
+import { getSectionList } from '../utils/markdownParser';
+
+// Load contact markdown
+const contactEntry = await getEntry('portfolio', 'contact');
+const rawBody = contactEntry ? contactEntry.body : '';
+
+const parseKeyValue = (list: string[]) => {
+  return list.map(item => {
+    const colonIndex = item.indexOf(':');
+    if (colonIndex === -1) return { key: item.trim(), value: '' };
+    const key = item.substring(0, colonIndex).trim();
+    const value = item.substring(colonIndex + 1).trim();
+    return { key, value };
+  });
+};
+
+const publicContact = parseKeyValue(getSectionList(rawBody, 'Public Contact'));
+const availability = parseKeyValue(getSectionList(rawBody, 'Availability'));
+const collaboration = parseKeyValue(getSectionList(rawBody, 'Preferred Collaboration'));
+
+// Helper to check if string is a URL
+const isLink = (str: string) => str.startsWith('http://') || str.startsWith('https://');
+const isEmail = (str: string) => str.includes('@') && !str.startsWith('http');
+const isPhone = (str: string) => /^\d{10,}$/.test(str.replace(/[\s\-\+]/g, ''));
+---
+
+<Layout title="Contact & Booking" description="Get in touch for astrological consultations. Book natal chart readings, compatibility matching, and business timing optimization.">
+  <div class="container contact-page">
+    
+    <!-- Page Header -->
+    <div class="page-header">
+      <span class="badge">Inquire</span>
+      <h1 class="text-gradient">Contact & Booking</h1>
+      <p>Schedule a chart consultation or start a conversation about potential speaking and writing opportunities.</p>
+    </div>
+
+    <div class="contact-grid">
+      
+      <!-- Contact Info Details (Left) -->
+      <div class="contact-info-panel">
+        
+        <!-- Public Contact -->
+        <div class="glass-card info-subcard">
+          <h3 class="gold-gradient">Public Contact</h3>
+          <ul class="info-list">
+            {publicContact.map(item => (
+              <li>
+                <span class="info-key">{item.key}:</span>
+                <span class="info-val">
+                  {isLink(item.value) ? (
+                    <a href={item.value} target="_blank" rel="noopener noreferrer" class="contact-link">{item.value.replace('https://', '')}</a>
+                  ) : isEmail(item.value) ? (
+                    <a href={`mailto:${item.value}`} class="contact-link">{item.value}</a>
+                  ) : isPhone(item.value) ? (
+                    <a href={`tel:+91${item.value}`} class="contact-link">{item.value}</a>
+                  ) : (
+                    item.value
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Availability Status -->
+        <div class="glass-card info-subcard">
+          <h3 class="text-gradient">Availability Status</h3>
+          <ul class="info-list">
+            {availability.map(item => (
+              <li>
+                <span class="info-key">{item.key}:</span>
+                <span class="info-val highlight-val">{item.value}</span>
+              </li>
+            ))}
+          </ul>
+          <div class="availability-indicator-wrapper">
+            <span class="pulse-indicator"></span>
+            <p>Active consulting terms. Average response: 24h.</p>
+          </div>
+        </div>
+
+        <!-- Collaboration -->
+        <div class="glass-card info-subcard">
+          <h3 class="gold-gradient">Collaboration Channels</h3>
+          <ul class="info-list">
+            {collaboration.map(item => (
+              <li>
+                <span class="info-key">{item.key}:</span>
+                <span class="info-val">{item.value}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Booking Form (Right) -->
+      <div class="booking-form-panel glass-card">
+        <h2 class="text-gradient">Consultation Booking</h2>
+        <p class="form-desc">Provide your exact birth coordinates so we can prepare your natal chart geometries before the reading.</p>
+
+        <form class="booking-form" id="booking-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Full Name</label>
+              <input type="text" id="name" name="name" required placeholder="Aria Vance" />
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" name="email" required placeholder="aria@example.com" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="dob">Date of Birth</label>
+              <input type="date" id="dob" name="dob" required />
+            </div>
+            <div class="form-group">
+              <label for="tob">Exact Time of Birth</label>
+              <input type="time" id="tob" name="tob" required />
+              <span class="help-text">Check your birth certificate if possible.</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="pob">Place of Birth</label>
+            <input type="text" id="pob" name="pob" required placeholder="City, State, Country" />
+          </div>
+
+          <div class="form-group">
+            <label for="type">Consultation Focus</label>
+            <select id="type" name="type" required>
+              <option value="" disabled selected>Select reading archetype...</option>
+              <option value="natal">Natal Chart Geometry (In-depth analysis)</option>
+              <option value="transits">Planetary Transits & Timing (1-year forecast)</option>
+              <option value="compatibility">Synastry & Relationship Geometry</option>
+              <option value="business">Electional Business Launch Timing</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="message">Focus Areas / Specific Questions</label>
+            <textarea id="message" name="message" rows="4" placeholder="Briefly describe what life transitions or questions you want to focus on during our reading."></textarea>
+          </div>
+
+          <button type="submit" class="button-celestial submit-btn">Request Consultation</button>
+        </form>
+
+        <!-- Success Toast Modal -->
+        <div class="form-success-overlay hidden" id="success-overlay">
+          <div class="success-content">
+            <div class="success-icon">🌌</div>
+            <h3>Request Alignment Confirmed!</h3>
+            <p>Your birth coordinates have been sent to the celestial engine. I will review your natal alignments and contact you within 24 hours with booking schedules.</p>
+            <button class="button-celestial" id="close-success-btn">Return to Form</button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</Layout>
+
+<style>
+  .contact-page {
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+  }
+
+  .page-header {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .page-header h1 {
+    font-size: 3rem;
+  }
+
+  .page-header p {
+    color: hsl(var(--text-muted));
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 40px;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+
+  .contact-info-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .info-subcard {
+    background: rgba(13, 13, 22, 0.3);
+    border: 1px solid hsl(var(--border-space) / 0.6);
+  }
+
+  .info-subcard h3 {
+    font-size: 1.15rem;
+    margin-bottom: 16px;
+    border-bottom: 1px solid hsl(var(--border-space) / 0.5);
+    padding-bottom: 8px;
+  }
+
+  .info-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .info-list li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .info-key {
+    color: hsl(var(--text-muted));
+    font-weight: 500;
+  }
+
+  .info-val {
+    color: hsl(var(--text-primary));
+  }
+
+  .highlight-val {
+    color: hsl(var(--gold-celestial));
+    font-weight: 600;
+  }
+
+  .contact-link {
+    color: hsl(var(--primary-indigo));
+    border-bottom: 1px dashed hsl(var(--primary-indigo) / 0.5);
+  }
+
+  .contact-link:hover {
+    color: hsl(var(--accent-purple));
+    border-bottom-color: hsl(var(--accent-purple));
+  }
+
+  .availability-indicator-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    border-top: 1px solid hsl(var(--border-space) / 0.4);
+    padding-top: 16px;
+  }
+
+  .pulse-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #51cf66;
+    box-shadow: 0 0 10px #51cf66;
+    animation: indicatorPulse 2s infinite;
+  }
+
+  .availability-indicator-wrapper p {
+    font-size: 0.8rem;
+    color: hsl(var(--text-muted));
+  }
+
+  @keyframes indicatorPulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(81, 207, 102, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(81, 207, 102, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(81, 207, 102, 0); }
+  }
+
+  /* Booking form styling */
+  .booking-form-panel {
+    background: rgba(13, 13, 22, 0.4);
+    border: 1px solid hsl(var(--border-space));
+    padding: 40px;
+    position: relative;
+  }
+
+  .booking-form-panel h2 {
+    font-size: 1.75rem;
+    margin-bottom: 6px;
+  }
+
+  .form-desc {
+    font-size: 0.95rem;
+    color: hsl(var(--text-muted));
+    margin-bottom: 32px;
+  }
+
+  .booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 600px) {
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: hsl(var(--text-secondary));
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    background: rgba(8, 8, 16, 0.6);
+    border: 1px solid hsl(var(--border-space));
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: #fff;
+    outline: none;
+    transition: var(--transition-smooth);
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: hsl(var(--primary-indigo));
+    box-shadow: 0 0 10px hsl(var(--primary-indigo) / 0.25);
+    background: rgba(8, 8, 16, 0.95);
+  }
+
+  /* Support native form validation border colors */
+  .form-group input:user-valid:focus,
+  .form-group select:user-valid:focus,
+  .form-group textarea:user-valid:focus {
+    border-color: #51cf66;
+    box-shadow: 0 0 10px rgba(81, 207, 102, 0.2);
+  }
+
+  .help-text {
+    font-size: 0.75rem;
+    color: hsl(var(--text-muted));
+    margin-top: 2px;
+  }
+
+  .submit-btn {
+    margin-top: 10px;
+    padding: 14px 28px;
+  }
+
+  /* Overlay card on success */
+  .form-success-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(13, 13, 22, 0.98);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    z-index: 10;
+    padding: 24px;
+    transition: opacity var(--transition-smooth);
+  }
+
+  .success-content {
+    text-align: center;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .success-icon {
+    font-size: 3rem;
+    animation: successPulse 2s infinite alternate;
+  }
+
+  @keyframes successPulse {
+    to { transform: scale(1.1); filter: drop-shadow(0 0 10px hsl(var(--gold-celestial))); }
+  }
+
+  .success-content h3 {
+    font-size: 1.5rem;
+    color: hsl(var(--gold-celestial));
+  }
+
+  .success-content p {
+    font-size: 0.95rem;
+    color: hsl(var(--text-secondary));
+    line-height: 1.6;
+  }
+
+  .hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  function initContact() {
+    const form = document.getElementById('booking-form') as HTMLFormElement;
+    const overlay = document.getElementById('success-overlay');
+    const closeBtn = document.getElementById('close-success-btn');
+
+    if (form && overlay) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        // Simulate submit process
+        overlay.classList.remove('hidden');
+        form.reset();
+      });
+    }
+
+    if (closeBtn && overlay) {
+      closeBtn.addEventListener('click', () => {
+        overlay.classList.add('hidden');
+      });
+    }
+  }
+
+  document.addEventListener('astro:page-load', initContact);
+  initContact();
+</script>

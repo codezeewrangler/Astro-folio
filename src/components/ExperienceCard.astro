@@ -1,0 +1,202 @@
+---
+import type { ExperienceItem } from '../utils/markdownParser';
+
+interface Props {
+  item: ExperienceItem;
+}
+
+const { item } = Astro.props;
+---
+
+<div class="experience-card glass-card">
+  <div class="card-timeline-marker">
+    <div class="marker-dot"></div>
+    <div class="marker-line"></div>
+  </div>
+  
+  <div class="card-content">
+    <div class="card-header">
+      <span class="duration-badge">{item.duration}</span>
+      <h3 class="role-title">{item.role}</h3>
+      <h4 class="company-name gold-gradient">{item.company}</h4>
+      <p class="team-name">Team: {item.team}</p>
+    </div>
+
+    <div class="details-section">
+      <div class="details-block">
+        <h5 class="section-subtitle">Key Responsibilities</h5>
+        <ul class="details-list">
+          {item.responsibilities.map(resp => (
+            <li>
+              <span class="bullet-star">✦</span>
+              <p>{resp}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {item.outcomes.length > 0 && (
+        <div class="details-block">
+          <h5 class="section-subtitle">Key Outcomes</h5>
+          <ul class="details-list outcomes-list">
+            {item.outcomes.map(out => (
+              <li>
+                <span class="bullet-star text-gradient">✦</span>
+                <p><strong>{out}</strong></p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .experience-card {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 32px;
+    padding: 32px;
+    background: rgba(13, 13, 22, 0.4);
+    border: 1px solid hsl(var(--border-space) / 0.8);
+    position: relative;
+    z-index: 1;
+  }
+
+  .experience-card:hover {
+    border-color: hsl(var(--primary-indigo) / 0.4);
+    background: rgba(18, 16, 35, 0.55);
+  }
+
+  .card-timeline-marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .marker-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: hsl(var(--gold-celestial));
+    border: 3px solid hsl(var(--bg-obsidian));
+    box-shadow: 0 0 10px hsl(var(--gold-celestial));
+    z-index: 2;
+  }
+
+  .marker-line {
+    width: 2px;
+    flex-grow: 1;
+    background: linear-gradient(to bottom, hsl(var(--gold-celestial) / 0.5), hsl(var(--border-space)) 50%, transparent);
+    margin-top: 4px;
+  }
+
+  .card-content {
+    flex-grow: 1;
+  }
+
+  .card-header {
+    margin-bottom: 24px;
+  }
+
+  .duration-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: hsl(var(--primary-indigo) / 0.15);
+    color: hsl(var(--primary-indigo));
+    border: 1px solid hsl(var(--primary-indigo) / 0.3);
+    margin-bottom: 12px;
+    font-family: var(--font-headings);
+  }
+
+  .role-title {
+    font-size: 1.5rem;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .company-name {
+    font-size: 1.15rem;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .team-name {
+    font-size: 0.85rem;
+    color: hsl(var(--text-muted));
+  }
+
+  .details-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: 768px) {
+    .details-section {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .details-block {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .section-subtitle {
+    font-family: var(--font-headings);
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: hsl(var(--text-muted));
+  }
+
+  .details-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .details-list li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .bullet-star {
+    color: hsl(var(--gold-celestial));
+    font-size: 0.9rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .details-list p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .outcomes-list li p {
+    color: hsl(var(--text-primary));
+  }
+
+  @media (max-width: 500px) {
+    .experience-card {
+      flex-direction: column;
+      gap: 16px;
+      padding: 20px;
+    }
+
+    .card-timeline-marker {
+      display: none;
+    }
+  }
+</style>

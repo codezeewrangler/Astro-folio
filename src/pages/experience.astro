@@ -1,0 +1,95 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ExperienceCard from '../components/ExperienceCard.astro';
+import { getEntry } from 'astro:content';
+import { parseExperience } from '../utils/markdownParser';
+
+// Load content entries
+const experienceEntry = await getEntry('portfolio', 'experience');
+
+const rawExperience = experienceEntry ? experienceEntry.body : '';
+
+const experienceItems = parseExperience(rawExperience);
+---
+
+<Layout title="Experience & Skills" description="Explore my professional experience as an astrologer and advisor, along with my core techniques and technical skills.">
+  <div class="container experience-page">
+    
+    <!-- Header -->
+    <div class="page-header">
+      <span class="badge">Chronicle</span>
+      <h1 class="text-gradient">Experience & Skills</h1>
+      <p>A mapping of my professional trajectory, consultancy focus areas, and technical proficiencies.</p>
+    </div>
+
+    <!-- Timeline Section -->
+    <section class="timeline-section">
+      <h2 class="section-title"><span class="gold-gradient">Journey</span> Timeline</h2>
+      <div class="timeline-container">
+        <div class="timeline-backbone"></div>
+        {experienceItems.map(item => (
+          <ExperienceCard item={item} />
+        ))}
+      </div>
+    </section>
+
+  </div>
+</Layout>
+
+<style>
+  .experience-page {
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+  }
+
+  .page-header {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .page-header h1 {
+    font-size: 3rem;
+  }
+
+  .page-header p {
+    color: hsl(var(--text-muted));
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Timeline Backbone styles */
+  .timeline-section {
+    position: relative;
+    max-width: 980px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .timeline-container {
+    position: relative;
+    padding-left: 20px;
+  }
+
+  .timeline-backbone {
+    position: absolute;
+    top: 15px;
+    left: 26px;
+    bottom: 25px;
+    width: 2px;
+    background: linear-gradient(to bottom, hsl(var(--gold-celestial)), hsl(var(--primary-indigo) / 0.5), transparent);
+    z-index: 0;
+  }
+
+</style>
